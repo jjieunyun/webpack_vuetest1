@@ -2,17 +2,27 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ShowView from '../views/ShowView.vue'
+//중첩라우터
+import DoubleView from '../views/DoubleView.vue'
+import DoubleDynamic from "../views/DoubleDynamic.vue";
+
+//컴포넌트 들고옴
+import OneComponent from '../components/OneComponent.vue'
+import TwoComponent from '../components/TwoComponent.vue'
+
 
 // vue 플러그인을 사용하기 위한 use()메서드
 Vue.use(VueRouter)
 
 //컴포넌트의 경로 설정
+//방법(1) - 위에 import를 써줘야함
 const routes = [
   {
-    path: '/',
+    path: '/home',
     name: 'home',
     component: HomeView
   },
+//방법(2)
   {
     path: '/about',
     name: 'about',
@@ -42,8 +52,48 @@ const routes = [
       return import('../views/DynamicView.vue')
     }
   },
+  {
+    path : '/double',
+    component : DoubleView,
+    children : [
+      { path : 'one', component : OneComponent },
+      { path : 'two', component : TwoComponent }
+    ]
+  },
+  {
+    path: "/doubledynamic",
+    name: "doubledynamic",
+    component: DoubleDynamic,
+    children: [
+      {
+        path: ":id",
+        name: "doubledynamicid",
+        component: function () {
+          return import("../components/DynamicComponent.vue");
+        },
+      },
+    ],
+  },
 ]
+//네비게이션 가드 확인
+//check가 false이면 링크를 사용할 수없다
+// 전역으로 만들어 두어서 이동할때마다 라우팅이 발생하여 확인하기 힘들다
+// 라우터나 컴포넌트에 사용해서 각 라우터 혹은 컴포넌트 실행할때사용
+// 라우터 : beforeEnter
 
+
+/*
+let check =;
+router.beforeEach((to, from, next) => {
+  if (check) {
+    console.log(check);
+    return next();
+  }
+  console.log(check);
+  check = true;
+  next({ path: "/show" });
+});
+*/
 //라우터 객체생성
 const router = new VueRouter({
   mode : "history",
